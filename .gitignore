@@ -2,10 +2,14 @@ __pycache__/
 .pytest_cache/
 .venv/
 *.pyc
+.dvc/cache/
+.dvc/tmp/
 mlruns/
 mlflow.db
 .dvc-storage/
 data/production_log.csv
+data/train.csv
+data/test.csv
 reports/*.png
 reports/*.json
 models/*.joblib
