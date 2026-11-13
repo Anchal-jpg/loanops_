@@ -1,0 +1,27 @@
+cmd: python -m src.train
+deps:
+- path: data/test.csv
+  hash: md5
+  md5: ff22f596f48244dac5df677d2c2d9882
+  size: 8572
+- path: data/train.csv
+  hash: md5
+  md5: 533ade03424fb94d10a46409a072051d
+  size: 33614
+- path: params.yaml
+  hash: md5
+  md5: 4a2253cf0003948371976c128f419706
+  size: 520
+- path: src/train.py
+  hash: md5
+  md5: b48a5c5e88a427500dbd094e23464b6e
+  size: 6575
+outs:
+- path: models/best_model.joblib
+  hash: md5
+  md5: 72ad5624078466a035395dedb53ce605
+  size: 179583
+- path: models/model_info.json
+  hash: md5
+  md5: 16a99c187f2d2286df72387c421dcd33
+  size: 371

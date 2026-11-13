@@ -1,0 +1,19 @@
+random_state: 42
+paths:
+  data: data/loan.csv
+  train: data/train.csv
+  test: data/test.csv
+  model: models/best_model.joblib
+  info: models/model_info.json
+  mlruns: mlruns
+  reports: reports
+training:
+  test_size: 0.2
+  min_improvement: 0.01
+  models:
+    logistic_regression: {C: 1.0, max_iter: 1000}
+    random_forest: {n_estimators: 150, max_depth: 8, min_samples_leaf: 2}
+    xgboost: {n_estimators: 120, max_depth: 4, learning_rate: 0.05, subsample: 0.9}
+drift:
+  threshold: 0.3
+  min_rows: 20

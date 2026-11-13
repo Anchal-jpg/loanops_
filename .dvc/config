@@ -1,0 +1,5 @@
+[core]
+    no_scm = True
+    remote = localstorage
+['remote "localstorage"']
+    url = F:\mse2 genai\.dvc-storage

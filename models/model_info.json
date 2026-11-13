@@ -1,0 +1,15 @@
+{
+  "model": "xgboost",
+  "metrics": {
+    "accuracy": 0.725,
+    "precision": 0.75,
+    "recall": 0.8888888888888888,
+    "f1": 0.8135593220338984,
+    "roc_auc": 0.6745805634694523
+  },
+  "version": "1",
+  "alias": "champion",
+  "registry_name": "loan_model",
+  "decision": "kept_existing_champion",
+  "training_date": "2026-11-13T16:46:08.940763+00:00"
+}

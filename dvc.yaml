@@ -1,0 +1,25 @@
+stages:
+  validate:
+    cmd: python -m src.validate_data
+    deps: [data/loan.csv, src/validate_data.py]
+    outs: []
+  preprocess:
+    cmd: python -m src.preprocess
+    deps: [data/loan.csv, src/preprocess.py, params.yaml]
+    outs: [data/train.csv, data/test.csv]
+  train:
+    cmd: python -m src.train
+    deps: [data/train.csv, data/test.csv, src/train.py, params.yaml]
+    outs: [models/best_model.joblib, models/model_info.json]
+  evaluate:
+    cmd: python -m src.evaluate
+    deps: [models/best_model.joblib, data/test.csv, src/evaluate.py]
+    outs: [reports/confusion_matrix.png, reports/roc_curve.png, reports/metrics.json]
+  explain:
+    cmd: python -m src.explain
+    deps: [models/best_model.joblib, data/test.csv, src/explain.py]
+    outs: [reports/shap_summary.png]
+  fairness:
+    cmd: python -m src.fairness
+    deps: [models/best_model.joblib, data/test.csv, src/fairness.py]
+    outs: [reports/fairness.json]

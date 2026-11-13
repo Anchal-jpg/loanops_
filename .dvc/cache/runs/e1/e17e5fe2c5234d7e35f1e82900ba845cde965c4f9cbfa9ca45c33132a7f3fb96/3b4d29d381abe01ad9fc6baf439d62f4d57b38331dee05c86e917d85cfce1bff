@@ -1,0 +1,23 @@
+cmd: python -m src.preprocess
+deps:
+- path: data/loan.csv
+  hash: md5
+  md5: b07b2a5ab36d396f698752532864df59
+  size: 42297
+- path: params.yaml
+  hash: md5
+  md5: 4a2253cf0003948371976c128f419706
+  size: 520
+- path: src/preprocess.py
+  hash: md5
+  md5: 65bbac58a0a2a66e570ef9caa92951c8
+  size: 818
+outs:
+- path: data/test.csv
+  hash: md5
+  md5: ff22f596f48244dac5df677d2c2d9882
+  size: 8572
+- path: data/train.csv
+  hash: md5
+  md5: 533ade03424fb94d10a46409a072051d
+  size: 33614

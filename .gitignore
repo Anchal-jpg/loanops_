@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+mlruns/
+mlflow.db
+.dvc-storage/
+data/production_log.csv
+reports/*.png
+reports/*.json
+models/*.joblib
