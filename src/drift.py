@@ -34,10 +34,12 @@ def main():
     try:
         from evidently.report import Report
         from evidently.metrics import DatasetDriftMetric
-        Report(metrics=[DatasetDriftMetric()]).run(
+        evidently_report = Report(metrics=[DatasetDriftMetric()])
+        evidently_report.run(
             reference_data=reference[CATEGORICAL + NUMERIC],
             current_data=current[CATEGORICAL + NUMERIC],
-        ).save_html(str(report))
+        )
+        evidently_report.save_html(str(report))
     except Exception as exc:
         report.write_text(
             "<html><body><h1>Drift report (scipy fallback)</h1>"
