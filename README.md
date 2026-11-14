@@ -1,39 +1,71 @@
-# LoanLens: Loan Approval Prediction with MLOps
+<div align="center">
 
-LoanLens is a beginner-friendly, CPU-only college project that predicts whether
-a loan application is likely to be approved. It demonstrates the complete
-local MLOps lifecycle:
+# 🏦 LoanLens
 
-```text
-Data → Validation → Preprocessing → Training → Evaluation
-     → MLflow Tracking/Registry → Champion Quality Gate
-     → FastAPI Serving → Streamlit UI → Prediction Logs
-     → Drift Monitoring → Retraining
+### Loan Approval Prediction with an End-to-End Local MLOps Lifecycle
+
+[![CI](https://github.com/KAVINGUPTA09/loanops/actions/workflows/ci.yml/badge.svg)](https://github.com/KAVINGUPTA09/loanops/actions/workflows/ci.yml)
+[![CD](https://github.com/KAVINGUPTA09/loanops/actions/workflows/cd.yml/badge.svg)](https://github.com/KAVINGUPTA09/loanops/actions/workflows/cd.yml)
+![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![MLflow](https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=white)
+![DVC](https://img.shields.io/badge/DVC-945DD6?logo=dvc&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-EC6B23)
+
+**CPU-only · Beginner-friendly · Fully reproducible · Windows / Linux / macOS**
+
+[Quick Start](#-quick-start) · [Pipeline](#-pipeline-overview) · [API](#-api-serving) · [Dashboard](#-streamlit-dashboard) · [Monitoring](#-drift-monitoring--retraining) · [Viva](#-viva-cheat-sheet)
+
+</div>
+
+---
+
+## 📌 Overview
+
+Banks receive loan applications containing income, credit history, education,
+dependents and property details. Manual review is slow and inconsistent.
+
+**LoanLens** estimates loan approval probability through FastAPI and Streamlit,
+while implementing validation, reproducible preprocessing, MLflow tracking and
+registry, champion quality gates, logging, drift monitoring and retraining.
+
+```mermaid
+flowchart LR
+    A[Data] --> B[Validation] --> C[Preprocessing] --> D[Training]
+    D --> E[Evaluation] --> F[MLflow Tracking and Registry]
+    F --> G{Champion Quality Gate} --> H[FastAPI Serving]
+    H --> I[Streamlit UI]
+    H --> J[Prediction Logs] --> K[Drift Monitoring]
+    K -->|drift detected| D
 ```
 
-The project is designed for Python 3.10/3.11 and also runs in the tested
-Python 3.12 environment. It works on Windows, Linux and macOS.
+> ⚠️ **Academic honesty:** The bundled dataset is synthetic and for
+> demonstration only. Real lending requires approved data, privacy controls,
+> authentication, durable storage and human/business review.
 
-> **Academic honesty note:** The included dataset is synthetic and is intended
-> for demonstration. A production system would need approved real data,
-> privacy controls, authentication, durable storage and human/business review.
+## ✨ Features
 
-## 1. Problem statement
+| Area | What you get |
+|---|---|
+| 🧪 Data validation | Schema, range and target checks with non-zero failure |
+| 🔧 Leak-free preprocessing | Imputation, scaling and one-hot encoding inside the saved pipeline |
+| 🤖 Model comparison | Logistic Regression, Random Forest and XGBoost |
+| 📊 Experiment tracking | MLflow params, metrics, hashes and image artifacts |
+| 🏆 Champion quality gate | Promotion only after configured ROC-AUC improvement |
+| 🔍 Explainability | SHAP summary plot and top-three prediction reasons |
+| ⚖️ Fairness | Approval rate and recall by Gender and Married |
+| 🚀 Serving | FastAPI, Swagger and thread-safe prediction logging |
+| 🖥️ Dashboard | Streamlit prediction, history, monitoring and registry views |
+| 📉 Drift monitoring | Evidently with SciPy KS-test/chi-square fallback |
+| ♻️ Retraining | One command reruns the training lifecycle |
+| 📦 Reproducibility | DVC, pinned dependencies, Docker and GitHub Actions |
 
-Banks receive loan applications containing applicant income, co-applicant
-income, credit history, education, dependents and property area. Manually
-reviewing every application is slow and inconsistent. This project trains
-classification models to estimate approval probability and exposes the
-prediction through an API and a dashboard.
-
-The target column is:
-
-```text
-Loan_Status: Y = approved, N = rejected
-```
+## 📊 Dataset
 
 The sample generator creates 600 realistic-looking records with missing values,
-income/credit correlations and the Kaggle-compatible columns:
+income/credit correlations and Kaggle-compatible columns:
 
 ```text
 Loan_ID, Gender, Married, Dependents, Education, Self_Employed,
@@ -41,14 +73,16 @@ ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term,
 Credit_History, Property_Area, Loan_Status
 ```
 
-## 2. Repository map
+`Loan_Status` is the target: `Y` means approved and `N` means rejected.
+
+## 🗂️ Repository Structure
 
 ```text
 loanops/
 ├── app/main.py                    FastAPI prediction service
 ├── frontend/streamlit_app.py      LoanLens dashboard
 ├── src/
-│   ├── utils.py                   Params, paths, logging helpers
+│   ├── utils.py                   Params, paths and helpers
 │   ├── validate_data.py            Schema and range validation
 │   ├── preprocess.py               Cleaning and train/test split
 │   ├── train.py                    Training, MLflow and quality gate
@@ -56,7 +90,7 @@ loanops/
 │   ├── explain.py                  SHAP summary plot
 │   ├── fairness.py                 Group approval/recall report
 │   ├── drift.py                   Drift tests and HTML report
-│   └── retrain.py                 Re-run training after drift
+│   └── retrain.py                 Retraining after drift
 ├── scripts/
 │   ├── make_sample_data.py         Generate sample data
 │   ├── setup_dvc.py                Configure local DVC remote
@@ -68,64 +102,50 @@ loanops/
 ├── reports/                         Evaluation and monitoring outputs
 ├── params.yaml                     Central configuration
 ├── dvc.yaml, dvc.lock              Reproducible pipeline
-├── Dockerfile                       API image
-├── docker-compose.yml               API, UI and MLflow services
-├── .github/workflows/ci.yml        CI checks and Docker build
-├── .github/workflows/cd.yml        GHCR image publishing
+├── Dockerfile, docker-compose.yml
+├── .github/workflows/              CI, CD and scheduled drift check
 ├── requirements.txt                Exact dependency versions
 ├── VIVA_PREP.md                    Viva questions and demo script
 └── SELF_AUDIT.md                   Validation and common fixes
 ```
 
-## 3. Complete Windows setup
+## 🚀 Quick Start
 
-Open PowerShell from the project root:
+### 🪟 Windows PowerShell
 
 ```powershell
 cd "F:\mse2 genai"
-```
-
-Check Python. Python 3.12 is acceptable if Python 3.11 is not installed:
-
-```powershell
-py --list
-py -3.12 --version
-```
-
-Create and activate the virtual environment:
-
-```powershell
 py -3.12 -m venv .venv
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 .\.venv\Scripts\Activate.ps1
-```
 
-Install the pinned dependencies:
-
-```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-```
 
-`SQLAlchemy==2.0.36` is intentionally pinned because it is compatible with
-the selected MLflow version. Do not install a random newer SQLAlchemy version
-in this environment.
-
-Generate data and reproduce the pipeline:
-
-```powershell
 python scripts\make_sample_data.py
 python scripts\setup_dvc.py
 dvc repro
-```
-
-Run the complete verification:
-
-```powershell
 python scripts\smoke_test.py
 ```
 
-Expected result:
+Python 3.11 is also supported. If it is unavailable, Python 3.12 is fine.
+`SQLAlchemy==2.0.36` is pinned intentionally for MLflow compatibility.
+
+### 🐧 Linux / 🍎 macOS
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+python scripts/make_sample_data.py
+python scripts/setup_dvc.py
+dvc repro
+python scripts/smoke_test.py
+```
+
+Expected smoke-test output:
 
 ```text
 PASS sample data
@@ -142,146 +162,75 @@ PASS drift check
 PASS retrain trigger
 ```
 
-## 4. Linux/macOS setup
+## 🔄 Pipeline Overview
 
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python scripts/make_sample_data.py
-python scripts/setup_dvc.py
-dvc repro
-python scripts/smoke_test.py
-```
-
-## 5. What happens in the pipeline?
-
-### Stage 1: Data generation
-
-`scripts/make_sample_data.py` writes `data/loan.csv`. It is only a fallback
-for users who do not have the Kaggle file.
-
-```powershell
-python scripts\make_sample_data.py
-```
-
-### Stage 2: Validation
-
-`src.validate_data` checks required columns, minimum row count, non-negative
-numeric values and valid `Y/N` targets. A failure exits with a non-zero code.
-
-```powershell
-python -m src.validate_data
-```
-
-### Stage 3: Preprocessing
-
-`src.preprocess` converts `Dependents = 3+` to `3`, converts the target to
-`0/1`, and creates reproducible stratified train/test files:
+DVC stages are:
 
 ```text
-data/train.csv
-data/test.csv
+validate → preprocess → train → evaluate → explain → fairness
 ```
 
-The actual model preprocessing is also inside the sklearn pipeline:
+| # | Stage | Command | What it does |
+|---|---|---|---|
+| 1 | Data | `python scripts\make_sample_data.py` | Writes fallback `data/loan.csv` |
+| 2 | Validate | `python -m src.validate_data` | Checks columns, rows, ranges and target |
+| 3 | Preprocess | `python -m src.preprocess` | Converts `3+`, target and stratified split |
+| 4 | Train | `python -m src.train` | Trains three models and applies quality gate |
+| 5 | Evaluate | `python -m src.evaluate` | Metrics, confusion matrix and ROC curve |
+| 6 | Explain | `python -m src.explain` | SHAP summary plot |
+| 7 | Fairness | `python -m src.fairness` | Group approval-rate and recall report |
 
-- Numeric columns: median imputation + standard scaling
-- Categorical columns: most-frequent imputation + one-hot encoding
+### Model preprocessing
 
-Keeping preprocessing inside the saved pipeline prevents training-serving skew.
+The saved sklearn pipeline performs:
 
-### Stage 4: Training
+- Numeric columns: median imputation and standard scaling
+- Categorical columns: most-frequent imputation and one-hot encoding
 
-`src.train` trains:
+Keeping preprocessing inside the model prevents training-serving skew.
 
-1. Logistic Regression
-2. Random Forest
-3. XGBoost
-
-Each model gets one MLflow run with parameters, accuracy, precision, recall,
-F1, ROC-AUC, data hash, confusion matrix and ROC artifacts. The best model is
-selected by ROC-AUC first and F1 second.
-
-The saved serving model is:
+Generated outputs:
 
 ```text
-models/best_model.joblib
+models/best_model.joblib       models/model_info.json
+reports/metrics.json           reports/confusion_matrix.png
+reports/roc_curve.png          reports/shap_summary.png
+reports/fairness.json
 ```
 
-### Stage 5: MLflow registry and quality gate
+## 🏆 MLflow Registry & Quality Gate
 
-MLflow uses a local SQLite backend:
+| Item | Value |
+|---|---|
+| Backend DB | `mlflow.db` local SQLite |
+| Artifacts | `mlruns/` |
+| Registered model | `loan_model` |
+| Alias | `champion` |
 
-```text
-Database: mlflow.db
-Artifacts: mlruns/
-Registered model: loan_model
-Alias: champion
-```
-
-The new model is promoted to `champion` only when its ROC-AUC improves over
-the current champion by at least `training.min_improvement` in `params.yaml`.
-If the registry is unavailable, the local joblib model remains available.
-
-Start the MLflow UI:
+A new model becomes `champion` only if ROC-AUC improves over the current
+champion by at least `training.min_improvement` in `params.yaml`. If the
+registry is unavailable, the local joblib model remains available.
 
 ```powershell
 mlflow ui --backend-store-uri sqlite:///mlflow.db --host 127.0.0.1 --port 5000
 ```
 
-Open:
+Open [http://localhost:5000](http://localhost:5000).
 
-```text
-http://localhost:5000
-```
-
-The current deployment intentionally uses local MLflow. A cloud MLflow server
-with RDS/PostgreSQL and S3 is a future deployment extension, not required for
-the local project to work.
-
-### Stage 6: Evaluation and reports
-
-```powershell
-python -m src.evaluate
-python -m src.explain
-python -m src.fairness
-```
-
-Generated files include:
-
-```text
-reports/metrics.json
-reports/confusion_matrix.png
-reports/roc_curve.png
-reports/shap_summary.png
-reports/fairness.json
-models/model_info.json
-```
-
-### Stage 7: API serving
-
-Start FastAPI in a separate terminal:
+## ⚡ API Serving
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 uvicorn app.main:app --reload
 ```
 
-Open Swagger:
-
-```text
-http://localhost:8000/docs
-```
-
-Endpoints:
+Swagger: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 | Endpoint | Purpose |
 |---|---|
 | `GET /health` | API/model readiness and champion version |
 | `GET /model-info` | Selected model metrics and training metadata |
-| `POST /predict` | Prediction, probability and top three SHAP reasons |
+| `POST /predict` | Prediction, probability and top-three SHAP reasons |
 
 Example request:
 
@@ -301,19 +250,13 @@ Example request:
 }
 ```
 
-Every successful prediction is appended thread-safely to:
-
-```text
-data/production_log.csv
-```
-
-Check it:
+Every successful prediction is appended to `data/production_log.csv`:
 
 ```powershell
 Import-Csv .\data\production_log.csv | Select-Object -Last 5
 ```
 
-### Stage 8: Streamlit dashboard
+## 🖥️ Streamlit Dashboard
 
 Keep the API running and open another terminal:
 
@@ -322,49 +265,39 @@ Keep the API running and open another terminal:
 streamlit run frontend\streamlit_app.py
 ```
 
-Open:
+Open [http://localhost:8501](http://localhost:8501).
 
-```text
-http://localhost:8501
-```
-
-The dashboard provides:
+Dashboard includes:
 
 - Real-time loan form
 - API health and champion version
 - Approval probability and decision card
-- SHAP-based top three reasons
-- Prediction history
-- Approval-rate metrics and chart
-- Drift simulation and drift-check buttons
-- Retraining button
+- SHAP top-three reasons
+- Prediction history and approval-rate chart
+- Drift simulation, drift-check and retraining buttons
 - Model registry metadata
 
-For a strong applicant, try income `10000`, loan amount `100` and credit
-history `1`. For a weak applicant, try income `2000`, loan amount `300` and
-credit history `0`. The model output is probabilistic; it is not a banking
-decision.
+Try:
 
-### Stage 9: Drift monitoring and retraining
+| Applicant | Income | Loan amount | Credit history |
+|---|---:|---:|---:|
+| 💪 Strong | `10000` | `100` | `1` |
+| ⚠️ Weak | `2000` | `300` | `0` |
+
+The output is probabilistic and is not a real banking decision.
+
+## 📉 Drift Monitoring & Retraining
 
 The monitor compares training data with `data/production_log.csv`.
-
-For a fast demo:
 
 ```powershell
 python scripts\simulate_drift.py
 python -m src.drift
+python -m src.retrain
 ```
 
-The simulator creates at least the configured minimum rows and shifts income,
-loan amount, term, credit history, education and property area. The monitor
-uses:
-
-- Evidently when the pinned API works
-- SciPy KS-test for numeric columns
-- SciPy chi-square for categorical columns
-
-It writes:
+Monitoring uses Evidently when available, with SciPy KS-test for numeric
+columns and chi-square for categorical columns. The report is:
 
 ```text
 reports/drift_report.html
@@ -372,109 +305,61 @@ reports/drift_report.html
 
 Exit codes:
 
-```text
-0 = no actionable drift or too few rows
-2 = drift share reached the configured threshold
-```
+| Code | Meaning |
+|---:|---|
+| `0` | No actionable drift or too few rows |
+| `2` | Drift share reached the configured threshold |
 
-After a trigger:
+Retraining reruns preprocessing, training, evaluation, SHAP and fairness.
 
-```powershell
-python -m src.retrain
-```
+## 📦 DVC, Docker & CI/CD
 
-This runs preprocessing, training, evaluation, SHAP and fairness again.
+### DVC
 
-## 6. DVC: versioning and reproducibility
-
-DVC tracks the dataset pointer while Git tracks code and configuration.
-`scripts/setup_dvc.py` creates the local remote `.dvc-storage` and is safe to
-run again.
-
-Useful commands:
+Git tracks code/configuration; DVC tracks dataset pointers and pipeline state.
+`setup_dvc.py` creates the local `.dvc-storage` remote and is safe to rerun.
 
 ```powershell
-python scripts\setup_dvc.py
 dvc status
 dvc dag
 dvc repro
 dvc push
 ```
 
-Pipeline stages in `dvc.yaml`:
+### Docker
 
-```text
-validate → preprocess → train → evaluate → explain → fairness
-```
-
-`dvc.lock` records the reproducible stage state. Generated model files,
-production logs, MLflow database, cache and train/test outputs are ignored by
-Git. In a team/cloud setup, use a shared remote instead of the local folder.
-
-## 7. Docker and Docker Compose
-
-Docker Desktop is optional for local development. The Dockerfile is still
-used by CI and can be built on GitHub Actions without Docker installed locally.
-
+Docker Desktop is optional locally. GitHub Actions builds the image remotely.
 If Docker is installed:
 
 ```powershell
 docker compose up --build
 ```
 
-Services:
+| Service | URL |
+|---|---|
+| FastAPI | `http://localhost:8000` |
+| Streamlit | `http://localhost:8501` |
+| MLflow | `http://localhost:5000` |
 
-```text
-FastAPI:   http://localhost:8000
-Streamlit: http://localhost:8501
-MLflow:    http://localhost:5000
-```
+### GitHub Actions
 
-The API image trains a sample model during image build if generated outputs
-are absent. Compose mounts data, models, reports and MLflow files locally.
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | Push / PR | Install → data → DVC → repro → Flake8 → Pytest → Docker build |
+| `cd.yml` | Push to `main` | Publishes image to GHCR |
+| `drift_check.yml` | Manual / weekly | Runs drift check and uploads HTML report |
 
-## 8. GitHub Actions and container image
-
-Repository:
-
-```text
-https://github.com/KAVINGUPTA09/loanops
-```
-
-### CI workflow
-
-`.github/workflows/ci.yml` runs on pushes and pull requests:
-
-```text
-Install dependencies
-→ Generate sample data
-→ Configure DVC
-→ dvc repro
-→ Flake8
-→ Pytest
-→ Docker build
-```
-
-### CD workflow
-
-`.github/workflows/cd.yml` runs on pushes to `main` and publishes:
+Published image:
 
 ```text
 ghcr.io/kavingupta09/loanops:latest
 ghcr.io/kavingupta09/loanops:<commit-sha>
 ```
 
-The image is visible under the repository owner's GitHub Packages. The current
-workflow publishes to GHCR; AWS ECR/ECS deployment is intentionally postponed.
+AWS ECR/ECS deployment is intentionally postponed; the GitHub/GHCR workflow
+is complete and verified.
 
-### Weekly drift workflow
-
-`.github/workflows/drift_check.yml` supports manual and weekly execution and
-uploads `reports/drift_report.html` as an Actions artifact.
-
-## 9. Testing and quality checks
-
-Run the focused checks:
+## 🧪 Testing
 
 ```powershell
 pytest -q
@@ -482,146 +367,127 @@ flake8 src app scripts
 python -m compileall -q src app scripts
 ```
 
-Tests cover:
+Tests cover API health, invalid input validation (`422`), dataset validation,
+tiny pipeline fit/predict and the full smoke lifecycle.
 
-- API health
-- Invalid request validation (`422`)
-- Dataset validation
-- Tiny training pipeline fit/predict
-- Full smoke lifecycle
+## ⚙️ Configuration
 
-The smoke test also starts a temporary API process, calls `/health` and
-`/predict`, runs drift detection and triggers retraining.
-
-## 10. One-minute demo order
-
-1. Start API:
-
-   ```powershell
-   uvicorn app.main:app --reload
-   ```
-
-2. Start Streamlit:
-
-   ```powershell
-   streamlit run frontend\streamlit_app.py
-   ```
-
-3. Show the loan form and submit one strong and one weak applicant.
-4. Show probability and SHAP reasons.
-5. Show `data/production_log.csv`.
-6. Open MLflow UI and show runs, `loan_model` and `champion`.
-7. Click **Simulate Production Drift** and **Run Drift Check**.
-8. Show `reports/drift_report.html`.
-9. Explain that retraining creates a new candidate and the quality gate decides
-   whether it becomes the champion.
-10. Open GitHub Actions and show green CI/CD runs and the GHCR image.
-
-## 11. Viva explanation in simple language
-
-### Why three models?
-
-Logistic Regression is a simple baseline, Random Forest captures non-linear
-rules, and XGBoost is a strong boosted-tree candidate. We compare them using
-the same test set and choose objectively.
-
-### Why ROC-AUC and F1?
-
-ROC-AUC measures ranking quality across thresholds. F1 balances precision and
-recall. Accuracy alone can be misleading when classes are imbalanced.
-
-### Why MLflow?
-
-MLflow records each experiment's parameters, metrics, artifacts and model
-version. The registry alias gives the serving system a stable champion name.
-
-### Why DVC?
-
-Git is suitable for code, while DVC stores dataset version metadata and
-reproducible pipeline state.
-
-### What is training-serving skew?
-
-It happens when training and production transform data differently. The saved
-sklearn pipeline keeps imputation, scaling and one-hot encoding together.
-
-### What is drift?
-
-Data drift means production feature distributions differ from training
-distributions. This project checks numeric and categorical drift and triggers
-retraining when the share crosses the configured threshold.
-
-### Why SHAP and fairness?
-
-SHAP explains which transformed features influenced an individual prediction.
-The fairness report compares approval rate and recall across Gender and Married
-groups. These are diagnostic reports, not proof of legal fairness.
-
-More questions and the four-person demo script are in [VIVA_PREP.md](VIVA_PREP.md).
-
-## 12. Configuration reference
-
-All central settings are in [params.yaml](params.yaml):
+All central settings live in `params.yaml`:
 
 | Setting | Meaning |
 |---|---|
 | `random_state` | Reproducibility seed |
 | `paths.*` | Data, model and report paths |
 | `training.test_size` | Test split proportion |
-| `training.min_improvement` | Minimum ROC-AUC promotion improvement |
+| `training.min_improvement` | Minimum ROC-AUC promotion gain |
 | `training.models.*` | Model hyperparameters |
 | `drift.threshold` | Drift share needed for a trigger |
-| `drift.min_rows` | Minimum production rows before checking |
+| `drift.min_rows` | Minimum production rows |
 
-Avoid hardcoding machine-specific absolute paths.
+## 🎬 One-Minute Demo Order
 
-## 13. Common problems
+1. Run `uvicorn app.main:app --reload`.
+2. Run `streamlit run frontend\streamlit_app.py`.
+3. Submit strong and weak applicants.
+4. Show probability and SHAP reasons.
+5. Show `data/production_log.csv`.
+6. Open MLflow and show runs, `loan_model` and `champion`.
+7. Click **Simulate Production Drift**, then **Run Drift Check**.
+8. Show `reports/drift_report.html`.
+9. Explain candidate retraining and the quality gate.
+10. Show green GitHub Actions and the GHCR image.
+
+## 🎓 Viva Cheat Sheet
+
+### Why three models?
+
+Logistic Regression is a baseline, Random Forest captures non-linear rules and
+XGBoost is a strong boosted-tree candidate. All use the same test split.
+
+### Why ROC-AUC and F1?
+
+ROC-AUC measures ranking across thresholds. F1 balances precision and recall;
+accuracy alone can mislead with imbalanced classes.
+
+### Why MLflow?
+
+It records parameters, metrics, artifacts and model versions. The `champion`
+alias gives serving a stable model name.
+
+### Why DVC?
+
+Git is for code; DVC stores dataset version metadata and pipeline state.
+
+### What is training-serving skew?
+
+Training and production transform data differently. The saved sklearn pipeline
+keeps imputation, scaling and encoding identical.
+
+### What is drift?
+
+Production feature distributions differ from training distributions. The
+monitor checks numeric and categorical drift and can trigger retraining.
+
+### Why SHAP and fairness?
+
+SHAP explains feature influence for one prediction. Fairness compares approval
+rate and recall across groups; it is diagnostic, not legal certification.
+
+More questions and the four-person demo script: [VIVA_PREP.md](VIVA_PREP.md).
+
+## 🛠️ Troubleshooting
 
 | Problem | Fix |
 |---|---|
 | Python 3.11 not found | Use `py -3.12 -m venv .venv` |
 | Activation blocked | `Set-ExecutionPolicy -Scope Process RemoteSigned` |
-| MLflow SQLAlchemy import error | Reinstall `SQLAlchemy==2.0.36` |
+| MLflow SQLAlchemy error | Reinstall `SQLAlchemy==2.0.36` |
 | Port 8000 busy | `uvicorn app.main:app --port 8001` |
 | Port 8501 busy | `streamlit run frontend/streamlit_app.py --server.port 8502` |
 | API offline in UI | Start FastAPI before Streamlit |
-| No production log | Submit at least one API/UI prediction |
-| Drift says too few rows | Use `python scripts\simulate_drift.py` |
+| No production log | Submit an API/UI prediction |
+| Too few drift rows | Run `python scripts\simulate_drift.py` |
 | GHCR tag invalid | Image repository names must be lowercase |
-| CI imports fail | Keep `pytest.ini` and `PYTHONPATH` configuration |
+| CI imports fail | Keep `pytest.ini` and workflow `PYTHONPATH` |
 | Docker unavailable locally | Use GitHub Actions; Docker Desktop is optional |
-| DVC cannot initialize | Run `python scripts\setup_dvc.py`; it supports non-Git local setup |
+| DVC cannot initialize | Run `python scripts\setup_dvc.py` |
 
-For the full self-audit, read [SELF_AUDIT.md](SELF_AUDIT.md).
+Full details: [SELF_AUDIT.md](SELF_AUDIT.md).
 
-## 14. Limitations and future work
+## ⚠️ Limitations & Future Work
 
-Current academic limitations:
+Current limitations:
 
-- Synthetic data is not suitable for real lending decisions.
-- Local SQLite MLflow is not a highly available production registry.
-- Local filesystem logs are ephemeral in many cloud platforms.
+- Synthetic data is unsuitable for real lending decisions.
+- Local SQLite MLflow is not highly available.
+- Local filesystem logs are ephemeral on many cloud platforms.
 - The API has no authentication or rate limiting.
-- Drift detection uses proxy feedback because immediate ground-truth labels
-  are not available.
-- Fairness summaries require domain, legal and statistical review.
+- Drift uses proxy feedback because immediate ground-truth labels are absent.
+- Fairness summaries need domain, legal and statistical review.
 
 Future production work:
 
 - Managed MLflow with PostgreSQL and S3
 - AWS ECR/ECS or Kubernetes deployment
-- Secrets manager and IAM/OIDC
+- Secrets Manager and IAM/OIDC
 - Durable production event storage
 - Scheduled monitoring with labelled outcomes
 - Model approval workflow and rollback
-- Data privacy, audit, access control and bias review
+- Privacy, audit, access control and bias review
 
-## 15. Useful links and files
+## 🔗 Links
 
-- [VIVA_PREP.md](VIVA_PREP.md) — 30 viva questions and five-minute team demo
-- [SELF_AUDIT.md](SELF_AUDIT.md) — verified behavior and common fixes
-- [params.yaml](params.yaml) — project configuration
-- [dvc.yaml](dvc.yaml) — pipeline graph
-- [src/train.py](src/train.py) — model selection and registry
-- [app/main.py](app/main.py) — serving API
-- [frontend/streamlit_app.py](frontend/streamlit_app.py) — dashboard
+- Repository: https://github.com/KAVINGUPTA09/loanops
+- [VIVA_PREP.md](VIVA_PREP.md)
+- [SELF_AUDIT.md](SELF_AUDIT.md)
+- [params.yaml](params.yaml)
+- [dvc.yaml](dvc.yaml)
+- [src/train.py](src/train.py)
+- [app/main.py](app/main.py)
+- [frontend/streamlit_app.py](frontend/streamlit_app.py)
+
+<div align="center">
+
+**Built as a college MLOps project · Made with ❤️ using Python**
+
+</div>
