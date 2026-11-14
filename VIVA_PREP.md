@@ -32,6 +32,8 @@
 28. **Random seed?** Reproducible results ke liye fixed value.
 29. **Limitations?** Synthetic data aur local filesystem production-grade nahi hain.
 30. **Future work?** Cloud artifact store, auth, real feedback labels aur scheduled retraining.
+31. **Approval threshold kya hai?** Probability 65% ya usse zyada ho to Approved; otherwise Rejected. Threshold `params.yaml` mein configurable hai.
+32. **AWS status kya hai?** Current academic implementation local MLflow, Docker, GHCR aur GitHub Actions tak complete hai; AWS ECR/ECS aur cloud MLflow next deployment phase hain.
 
 ## Five-minute demo
 

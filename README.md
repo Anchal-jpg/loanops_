@@ -481,6 +481,9 @@ Future production work:
 - Repository: https://github.com/KAVINGUPTA09/loanops
 - [VIVA_PREP.md](VIVA_PREP.md)
 - [SELF_AUDIT.md](SELF_AUDIT.md)
+- [PROJECT_REPORT.md](PROJECT_REPORT.md)
+- [PRESENTATION_OUTLINE.md](PRESENTATION_OUTLINE.md)
+- [docs/architecture.mmd](docs/architecture.mmd)
 - [params.yaml](params.yaml)
 - [dvc.yaml](dvc.yaml)
 - [src/train.py](src/train.py)

@@ -1,0 +1,13 @@
+flowchart LR
+    A[Loan CSV] --> B[Validate]
+    B --> C[Preprocess]
+    C --> D[Train three models]
+    D --> E[Evaluate]
+    D --> F[MLflow Registry]
+    F --> G[Champion Quality Gate]
+    G --> H[FastAPI]
+    H --> I[Streamlit]
+    H --> J[Production Log]
+    J --> K[Drift Monitor]
+    K -->|Drift Triggered| C
+    D --> L[Docker and GitHub Actions]
