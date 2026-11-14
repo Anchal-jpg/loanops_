@@ -30,15 +30,36 @@ LOCK = Lock()
 app = FastAPI(title="Loan Approval API")
 
 def _reasons(values):
-    transformed = MODEL.named_steps["preprocess"].transform(pd.DataFrame([values]))
+    preprocessor = MODEL.named_steps["preprocess"]
+    transformed = preprocessor.transform(pd.DataFrame([values]))
     estimator = MODEL.named_steps["model"]
-    explanation = shap.Explainer(estimator, transformed)(transformed)
+    if estimator.__class__.__module__.startswith("xgboost"):
+        explanation = shap.TreeExplainer(estimator)(transformed, check_additivity=False)
+    else:
+        explanation = shap.Explainer(estimator, transformed)(transformed)
     scores = explanation.values[0]
-    names = MODEL.named_steps["preprocess"].get_feature_names_out()
-    top = sorted(zip(names, scores), key=lambda item: abs(float(item[1])), reverse=True)[:3]
+    names = preprocessor.get_feature_names_out()
+
+    grouped = {}
+    for name, score in zip(names, scores):
+        source = name.split("__", 1)[-1]
+        for feature in (*preprocessor.transformers_[0][2], *preprocessor.transformers_[1][2]):
+            if source == feature or source.startswith(f"{feature}_"):
+                grouped[feature] = grouped.get(feature, 0.0) + float(score)
+                break
+    top = sorted(grouped.items(), key=lambda item: abs(item[1]), reverse=True)[:3]
+    labels = {
+        "ApplicantIncome": "Applicant Income",
+        "CoapplicantIncome": "Co-applicant Income",
+        "LoanAmount": "Loan Amount",
+        "Loan_Amount_Term": "Loan Term",
+        "Credit_History": "Credit History",
+        "Self_Employed": "Self-employed",
+        "Property_Area": "Property Area",
+    }
     readable = []
     for name, score in top:
-        feature = name.split("__", 1)[-1].replace("_", " ")
+        feature = labels.get(name, name.replace("_", " "))
         direction = "increases" if score > 0 else "decreases"
         readable.append(f"{feature.title()} {direction} approval likelihood")
     return readable
