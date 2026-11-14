@@ -80,7 +80,8 @@ def predict(request: LoanRequest):
         raise HTTPException(status_code=503, detail="Model is not available")
     values = request.model_dump()
     probability = float(MODEL.predict_proba(pd.DataFrame([values]))[0, 1])
-    prediction = "Approved" if probability >= 0.5 else "Rejected"
+    threshold = float(PARAMS["training"].get("approval_threshold", 0.5))
+    prediction = "Approved" if probability >= threshold else "Rejected"
     reasons = _reasons(values)
     row = {**values, "prediction": prediction, "probability": probability,
            "timestamp": datetime.now(timezone.utc).isoformat()}
@@ -91,4 +92,9 @@ def predict(request: LoanRequest):
             writer = csv.DictWriter(handle, fieldnames=row.keys())
             if not exists: writer.writeheader()
             writer.writerow(row)
-    return {"prediction": prediction, "probability": probability, "reasons": reasons}
+    return {
+        "prediction": prediction,
+        "probability": probability,
+        "approval_threshold": threshold,
+        "reasons": reasons,
+    }

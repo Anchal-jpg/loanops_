@@ -380,6 +380,7 @@ All central settings live in `params.yaml`:
 | `paths.*` | Data, model and report paths |
 | `training.test_size` | Test split proportion |
 | `training.min_improvement` | Minimum ROC-AUC promotion gain |
+| `training.approval_threshold` | Minimum approval probability; `0.65` means 65%+ is Approved |
 | `training.models.*` | Model hyperparameters |
 | `drift.threshold` | Drift share needed for a trigger |
 | `drift.min_rows` | Minimum production rows |
