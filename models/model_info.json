@@ -1,24 +1,24 @@
 {
-  "model": "random_forest",
+  "model": "logistic_regression",
   "metrics": {
-    "accuracy": 0.7477477477477478,
-    "precision": 0.7926829268292683,
-    "recall": 0.8552631578947368,
-    "f1": 0.8227848101265823,
-    "roc_auc": 0.7537593984962405
+    "accuracy": 0.8292682926829268,
+    "precision": 0.872093023255814,
+    "recall": 0.8823529411764706,
+    "f1": 0.8771929824561403,
+    "roc_auc": 0.855108359133127
   },
-  "candidate_model": "random_forest",
+  "candidate_model": "logistic_regression",
   "candidate_metrics": {
-    "accuracy": 0.7477477477477478,
-    "precision": 0.7926829268292683,
-    "recall": 0.8552631578947368,
-    "f1": 0.8227848101265823,
-    "roc_auc": 0.7537593984962405
+    "accuracy": 0.8292682926829268,
+    "precision": 0.872093023255814,
+    "recall": 0.8823529411764706,
+    "f1": 0.8771929824561403,
+    "roc_auc": 0.855108359133127
   },
-  "candidate_version": "34",
-  "version": "33",
+  "candidate_version": "4",
+  "version": "1",
   "alias": "champion",
   "registry_name": "loan_model",
   "decision": "kept_existing_champion",
-  "training_date": "2026-11-19T15:07:37.678327+00:00"
+  "training_date": "2026-11-19T16:38:54.910125+00:00"
 }

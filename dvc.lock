@@ -52,17 +52,17 @@ stages:
       size: 569
     - path: src/train.py
       hash: md5
-      md5: 07d1788c17d47ef55384a42f88b177dc
-      size: 6805
+      md5: 64d067cb4c8be5275469c83adc5ce8ec
+      size: 7809
     outs:
     - path: models/best_model.joblib
       hash: md5
-      md5: d368b697d41e0b3ba7e9a961a55ddc44
-      size: 6519
+      md5: 6b55f4e7df02f772aa394a8499bdf00e
+      size: 6471
     - path: models/model_info.json
       hash: md5
-      md5: 546fa10e6c361afdfd231d4e24c930c7
-      size: 409
+      md5: fdb6549280f52d7ed668072083cef37a
+      size: 674
   evaluate:
     cmd: python -m src.evaluate
     deps:
@@ -72,12 +72,12 @@ stages:
       size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: d368b697d41e0b3ba7e9a961a55ddc44
-      size: 6519
+      md5: 6b55f4e7df02f772aa394a8499bdf00e
+      size: 6471
     - path: src/evaluate.py
       hash: md5
-      md5: 2ed106cd9613381ba6353952f1a100e3
-      size: 1026
+      md5: 69e806faf6dcbfda9ee9196e562ae7d1
+      size: 1104
     outs:
     - path: reports/confusion_matrix.png
       hash: md5
@@ -100,17 +100,17 @@ stages:
       size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: d368b697d41e0b3ba7e9a961a55ddc44
-      size: 6519
+      md5: 6b55f4e7df02f772aa394a8499bdf00e
+      size: 6471
     - path: src/explain.py
       hash: md5
-      md5: 1b8db1211416cff1ec70747c86ae6981
-      size: 779
+      md5: 6f62746867496b9eef45cdb07acee812
+      size: 1455
     outs:
     - path: reports/shap_summary.png
       hash: md5
-      md5: 01a783b8b3d4a38d1344448e511af260
-      size: 42143
+      md5: b28a17b154b765af79b02c811ade4fb6
+      size: 42076
   fairness:
     cmd: python -m src.fairness
     deps:
@@ -120,12 +120,12 @@ stages:
       size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: d368b697d41e0b3ba7e9a961a55ddc44
-      size: 6519
+      md5: 6b55f4e7df02f772aa394a8499bdf00e
+      size: 6471
     - path: src/fairness.py
       hash: md5
-      md5: 827ccd1650079890cf355f2a0484f86e
-      size: 960
+      md5: c9da392634738121f69afe756430e571
+      size: 1042
     outs:
     - path: reports/fairness.json
       hash: md5
