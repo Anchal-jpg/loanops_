@@ -2,7 +2,7 @@
 
 # 🏦 LoanLens
 
-### Loan Approval Prediction with an End-to-End Local MLOps Lifecycle
+### Loan approval prediction with an end-to-end MLOps lifecycle
 
 [![CI](https://github.com/KAVINGUPTA09/loanops/actions/workflows/ci.yml/badge.svg)](https://github.com/KAVINGUPTA09/loanops/actions/workflows/ci.yml)
 [![CD](https://github.com/KAVINGUPTA09/loanops/actions/workflows/cd.yml/badge.svg)](https://github.com/KAVINGUPTA09/loanops/actions/workflows/cd.yml)
@@ -41,11 +41,11 @@ flowchart LR
     K -->|drift detected| D
 ```
 
-> **Dataset source:** The project dataset is from Kaggle:
-> https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
+> **Dataset source:** [Kaggle — Loan CSV](https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download)
 >
-> It contains 614 records and is public Kaggle-style loan data. The project
-> uses it for academic demonstration, not for real lending decisions.
+> The repository includes the downloaded 614-row CSV. Check Kaggle's current
+> dataset license and terms before redistribution or commercial use.
+> This dataset is used for academic demonstration, not real lending decisions.
 
 ## ✨ Features
 
@@ -96,7 +96,7 @@ loanops/
 │   ├── drift.py                   Drift tests and HTML report
 │   └── retrain.py                 Retraining after drift
 ├── scripts/
-│   ├── make_sample_data.py         Optional fallback dataset generator
+│   ├── make_sample_data.py         Optional synthetic fallback generator
 │   ├── setup_dvc.py                Configure local DVC remote
 │   ├── simulate_drift.py           Generate separate drift simulation data
 │   ├── promote_latest_candidate.py Promote a demo candidate in MLflow
@@ -136,7 +136,7 @@ dvc repro
 python scripts\smoke_test.py
 ```
 
-Python 3.11 is also supported. If it is unavailable, Python 3.12 is fine.
+Python 3.11 is used in CI. Python 3.12 is supported for local setup.
 `SQLAlchemy==2.0.36` is pinned intentionally for MLflow compatibility.
 
 ### 🐧 Linux / 🍎 macOS
@@ -155,7 +155,6 @@ python scripts/smoke_test.py
 Expected smoke-test output:
 
 ```text
-PASS sample data
 PASS validate
 PASS preprocess
 PASS train
@@ -315,6 +314,10 @@ outcome labels; unlabeled predictions must not be treated as ground truth.
 A model is promoted only if the configured minimum ROC-AUC improvement is
 achieved.
 
+The candidate and incumbent champion are scored on the same retraining
+evaluation split before promotion. `models/model_info.json` records both the
+active champion and the latest candidate version/metrics.
+
 Monitoring uses Evidently when available, with SciPy KS-test for numeric
 columns and chi-square for categorical columns. The report is:
 
@@ -364,7 +367,7 @@ docker compose up --build
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `ci.yml` | Push / PR | Install → data → DVC → repro → Flake8 → Pytest → Docker build |
+| `ci.yml` | Manual, push / PR | Install → DVC → repro → Flake8 → Pytest → Docker build |
 | `cd.yml` | Push to `main` | Publishes image to GHCR |
 | `drift_check.yml` | Manual / weekly | Runs drift check and uploads HTML report |
 
@@ -375,8 +378,9 @@ ghcr.io/kavingupta09/loanops:latest
 ghcr.io/kavingupta09/loanops:<commit-sha>
 ```
 
-AWS ECR/ECS deployment is intentionally postponed; the GitHub/GHCR workflow
-is complete and verified.
+CD publishes the container to GHCR; it does not deploy to AWS. An optional
+Render deploy hook runs only when configured. AWS ECR/ECS deployment remains
+future work.
 
 ## 🧪 Testing
 
@@ -387,7 +391,7 @@ python -m compileall -q src app scripts
 ```
 
 Tests cover API health, invalid input validation (`422`), dataset validation,
-tiny pipeline fit/predict and the full smoke lifecycle.
+verified drift-label handling, and tiny pipeline fit/predict.
 
 ## ⚙️ Configuration
 
@@ -406,16 +410,14 @@ All central settings live in `params.yaml`:
 
 ## 🎬 One-Minute Demo Order
 
-1. Run `uvicorn app.main:app --reload`.
-2. Run `streamlit run frontend\streamlit_app.py`.
-3. Submit strong and weak applicants.
-4. Show probability and SHAP reasons.
-5. Show `data/production_log.csv`.
-6. Open MLflow and show runs, `loan_model` and `champion`.
-7. Click **Simulate Production Drift**, then **Run Drift Check**.
-8. Show `reports/drift_report.html`.
-9. Explain candidate retraining and the quality gate.
-10. Show green GitHub Actions and the GHCR image.
+1. Run the DVC pipeline with `dvc repro`.
+2. Start MLflow UI, FastAPI, and Streamlit in separate terminals.
+3. Submit strong and weak applicants; show probability and SHAP reasons.
+4. Show normal predictions in `data/production_log.csv`.
+5. Simulate drift and explain `data/drift_log.csv` is separate.
+6. Run drift check and open `reports/drift_report.html`.
+7. Retrain; show candidate versus champion decision in MLflow.
+8. Show GitHub Actions and the published GHCR image.
 
 ## 🎓 Viva Cheat Sheet
 
