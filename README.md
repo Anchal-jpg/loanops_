@@ -307,6 +307,12 @@ python -m src.drift
 python -m src.retrain
 ```
 
+Retraining merges the original training baseline with a weighted drift batch.
+Rows in `data/drift_log.csv` receive pseudo-labels from the current champion
+using the configured approval threshold, so retraining produces a genuinely
+changed training dataset. A model is promoted only if the configured
+minimum ROC-AUC improvement is achieved.
+
 Monitoring uses Evidently when available, with SciPy KS-test for numeric
 columns and chi-square for categorical columns. The report is:
 

@@ -5,8 +5,8 @@ stages:
     deps:
     - path: data/loan.csv
       hash: md5
-      md5: b07b2a5ab36d396f698752532864df59
-      size: 42297
+      md5: 99b67a763820ef303cdf242c10437728
+      size: 38011
     - path: src/validate_data.py
       hash: md5
       md5: e06cd740038d72acbb686ad9ef97838a
@@ -16,8 +16,8 @@ stages:
     deps:
     - path: data/loan.csv
       hash: md5
-      md5: b07b2a5ab36d396f698752532864df59
-      size: 42297
+      md5: 99b67a763820ef303cdf242c10437728
+      size: 38011
     - path: params.yaml
       hash: md5
       md5: 752443e0fdf96daeed0b95923105aa92
@@ -29,51 +29,51 @@ stages:
     outs:
     - path: data/test.csv
       hash: md5
-      md5: ff22f596f48244dac5df677d2c2d9882
-      size: 8572
+      md5: 38ab706d8212219579e86b08d4559d12
+      size: 8728
     - path: data/train.csv
       hash: md5
-      md5: 533ade03424fb94d10a46409a072051d
-      size: 33614
+      md5: 31bb5692bb1b65ca16af3f4b4ea2ab39
+      size: 34132
   train:
     cmd: python -m src.train
     deps:
     - path: data/test.csv
       hash: md5
-      md5: ff22f596f48244dac5df677d2c2d9882
-      size: 8572
+      md5: 38ab706d8212219579e86b08d4559d12
+      size: 8728
     - path: data/train.csv
       hash: md5
-      md5: 533ade03424fb94d10a46409a072051d
-      size: 33614
+      md5: 31bb5692bb1b65ca16af3f4b4ea2ab39
+      size: 34132
     - path: params.yaml
       hash: md5
       md5: 752443e0fdf96daeed0b95923105aa92
       size: 548
     - path: src/train.py
       hash: md5
-      md5: 3959e3e57a77238ec17df1b8bf7a66cc
-      size: 6617
+      md5: 06e34de225545b6463fda866a3953548
+      size: 6665
     outs:
     - path: models/best_model.joblib
       hash: md5
-      md5: 72ad5624078466a035395dedb53ce605
-      size: 179583
+      md5: d368b697d41e0b3ba7e9a961a55ddc44
+      size: 6519
     - path: models/model_info.json
       hash: md5
-      md5: c38b25312d36236b334be9566cb33f03
-      size: 371
+      md5: 56047791089ba7e8567438e5839c285e
+      size: 409
   evaluate:
     cmd: python -m src.evaluate
     deps:
     - path: data/test.csv
       hash: md5
-      md5: ff22f596f48244dac5df677d2c2d9882
-      size: 8572
+      md5: 38ab706d8212219579e86b08d4559d12
+      size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: 72ad5624078466a035395dedb53ce605
-      size: 179583
+      md5: d368b697d41e0b3ba7e9a961a55ddc44
+      size: 6519
     - path: src/evaluate.py
       hash: md5
       md5: 2ed106cd9613381ba6353952f1a100e3
@@ -81,27 +81,27 @@ stages:
     outs:
     - path: reports/confusion_matrix.png
       hash: md5
-      md5: 429502f520c1c94cb2e897c2d4d6affe
-      size: 13774
+      md5: 6908d50d917998d841369aafd76a60b3
+      size: 13730
     - path: reports/metrics.json
       hash: md5
-      md5: 70927b8d90d2f8e7d936a5ce90995047
-      size: 143
+      md5: 13ac2379ce0419e9af1ac18a00f112a5
+      size: 168
     - path: reports/roc_curve.png
       hash: md5
-      md5: a7466f4825217a58622395eca3cfee4a
-      size: 21716
+      md5: 23e37f0eaf9198c40cea75b7beb6926b
+      size: 21376
   explain:
     cmd: python -m src.explain
     deps:
     - path: data/test.csv
       hash: md5
-      md5: ff22f596f48244dac5df677d2c2d9882
-      size: 8572
+      md5: 38ab706d8212219579e86b08d4559d12
+      size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: 72ad5624078466a035395dedb53ce605
-      size: 179583
+      md5: d368b697d41e0b3ba7e9a961a55ddc44
+      size: 6519
     - path: src/explain.py
       hash: md5
       md5: 1b8db1211416cff1ec70747c86ae6981
@@ -109,19 +109,19 @@ stages:
     outs:
     - path: reports/shap_summary.png
       hash: md5
-      md5: 9f2d1743af101ed0c197df70f46794ab
-      size: 63009
+      md5: 01a783b8b3d4a38d1344448e511af260
+      size: 42143
   fairness:
     cmd: python -m src.fairness
     deps:
     - path: data/test.csv
       hash: md5
-      md5: ff22f596f48244dac5df677d2c2d9882
-      size: 8572
+      md5: 38ab706d8212219579e86b08d4559d12
+      size: 8728
     - path: models/best_model.joblib
       hash: md5
-      md5: 72ad5624078466a035395dedb53ce605
-      size: 179583
+      md5: d368b697d41e0b3ba7e9a961a55ddc44
+      size: 6519
     - path: src/fairness.py
       hash: md5
       md5: 827ccd1650079890cf355f2a0484f86e
@@ -129,5 +129,5 @@ stages:
     outs:
     - path: reports/fairness.json
       hash: md5
-      md5: 04f676a53c27a7976be233b8fc8adc72
-      size: 600
+      md5: b5af5ea676c90d4e10f4944c922cf6bd
+      size: 472

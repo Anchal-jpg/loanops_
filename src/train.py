@@ -2,6 +2,7 @@ import json
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import os
 from datetime import datetime, timezone
 import joblib
 import mlflow
@@ -40,7 +41,9 @@ def metrics(model, x, y):
 
 def main():
     p = load_params()
-    train = pd.read_csv(path(p["paths"]["train"]))
+    retrain_path = os.environ.get("LOANOPS_RETRAIN_TRAIN")
+    train_file = path(retrain_path) if retrain_path else path(p["paths"]["train"])
+    train = pd.read_csv(train_file)
     test = pd.read_csv(path(p["paths"]["test"]))
     x_train, y_train = train[CATEGORICAL + NUMERIC], train[TARGET]
     x_test, y_test = test[CATEGORICAL + NUMERIC], test[TARGET]
