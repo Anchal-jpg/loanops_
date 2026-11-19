@@ -4,9 +4,12 @@ from src.train import NUMERIC, CATEGORICAL
 from src.utils import load_params, path
 
 def main():
-    p = load_params(); log = path("data/production_log.csv")
+    p = load_params()
+    simulated = path("data/drift_log.csv")
+    production = path("data/production_log.csv")
+    log = simulated if simulated.exists() else production
     if not log.exists():
-        print("No production log; drift check skipped"); return 0
+        print("No production or drift log; drift check skipped"); return 0
     reference = pd.read_csv(path(p["paths"]["train"])); current = pd.read_csv(log)
     if len(current) < p["drift"]["min_rows"]:
         print(f"Need {p['drift']['min_rows']} rows, found {len(current)}"); return 0

@@ -14,11 +14,9 @@ def main():
     frame["Credit_History"] = 0
     frame["Property_Area"] = "Rural"
     frame["Education"] = "Not Graduate"
-    frame["prediction"] = "Rejected"
-    frame["probability"] = 0.1
     frame["timestamp"] = datetime.now(timezone.utc).isoformat()
-    frame.to_csv(ROOT / "data" / "production_log.csv", index=False)
-    print("Created API-compatible drifted production log")
+    frame.to_csv(ROOT / "data" / "drift_log.csv", index=False)
+    print("Created simulated drift data at data/drift_log.csv")
 
 if __name__ == "__main__":
     main()

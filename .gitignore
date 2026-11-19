@@ -8,6 +8,7 @@ mlruns/
 mlflow.db
 .dvc-storage/
 data/production_log.csv
+data/drift_log.csv
 data/train.csv
 data/test.csv
 reports/*.png

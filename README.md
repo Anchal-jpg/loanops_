@@ -250,7 +250,9 @@ Example request:
 }
 ```
 
-Every successful prediction is appended to `data/production_log.csv`:
+Every successful prediction is appended to `data/production_log.csv`.
+The drift simulator intentionally writes separate data to `data/drift_log.csv`,
+so simulated traffic never overwrites or fabricates real prediction history:
 
 ```powershell
 Import-Csv .\data\production_log.csv | Select-Object -Last 5
@@ -288,7 +290,8 @@ The output is probabilistic and is not a real banking decision.
 
 ## 📉 Drift Monitoring & Retraining
 
-The monitor compares training data with `data/production_log.csv`.
+The monitor compares training data with `data/drift_log.csv` when available.
+Without simulated data, it falls back to `data/production_log.csv`.
 
 ```powershell
 python scripts\simulate_drift.py

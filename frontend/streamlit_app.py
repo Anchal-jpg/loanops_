@@ -309,7 +309,7 @@ with history_tab:
             column_config = {}
             if "probability" in view:
                 column_config["probability"] = st.column_config.ProgressColumn(
-                    "Approval chance", min_value=0.0, max_value=1.0, format="%.0f%%")
+                    "Approval chance", min_value=0.0, max_value=1.0, format="percent")
             st.dataframe(view, use_container_width=True, hide_index=True,
                          column_config=column_config, height=380)
             st.download_button("Download full log (CSV)", log.to_csv(index=False).encode(),
