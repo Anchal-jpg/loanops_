@@ -278,6 +278,7 @@ Dashboard includes:
 - Prediction history and approval-rate chart
 - Drift simulation, drift-check and retraining buttons
 - Model registry metadata
+- Demo-only button to promote the latest registered MLflow candidate
 
 Try:
 

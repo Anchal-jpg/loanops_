@@ -62,6 +62,7 @@ def main():
         with mlflow.start_run(run_name=name):
             pipe.fit(x_train, y_train)
             score = metrics(pipe, x_test, y_test)
+            mlflow.set_tag("model_name", name)
             mlflow.log_params(cfg[name])
             mlflow.log_metrics(score)
             mlflow.set_tag("data_hash", data_hash(path(p["paths"]["train"])))

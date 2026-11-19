@@ -178,6 +178,12 @@ with st.sidebar:
         with st.spinner("Retraining and registering…"):
             code, output = run_local_command(["-m", "src.retrain"])
         st.session_state.update(command_output=output, command_ok=code == 0)
+    if st.button("🏆 Promote latest candidate (demo)", use_container_width=True):
+        with st.spinner("Promoting latest registered candidate…"):
+            code, output = run_local_command(
+                ["scripts/promote_latest_candidate.py"]
+            )
+        st.session_state.update(command_output=output, command_ok=code == 0)
 
 # ---------------------------------------------------------------- data
 log = read_log()
