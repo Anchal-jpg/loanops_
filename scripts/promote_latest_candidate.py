@@ -41,7 +41,7 @@ def main():
 
     tags = client.get_model_version(registered_name, candidate.version).tags
     run = mlflow.get_run(candidate.run_id)
-    model_name = run.data.tags.get("model_name", "candidate")
+    model_name = run.data.tags.get("model_name") or run.info.run_name or "candidate"
     metrics = {
         "accuracy": run.data.metrics.get("accuracy", 0.0),
         "precision": run.data.metrics.get("precision", 0.0),

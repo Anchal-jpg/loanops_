@@ -4,6 +4,7 @@ import subprocess
 import sys
 
 import altair as alt
+import mlflow
 import pandas as pd
 import requests
 import streamlit as st
@@ -149,6 +150,51 @@ def chart_style(chart):
             .configure_view(strokeWidth=0))
 
 
+def get_model_comparison():
+    models = {
+        "logistic_regression": {
+            "name": "Logistic Regression",
+            "role": "Linear interpretable baseline",
+        },
+        "random_forest": {
+            "name": "Random Forest",
+            "role": "Non-linear ensemble of decision trees",
+        },
+        "xgboost": {
+            "name": "XGBoost",
+            "role": "Gradient-boosted decision trees",
+        },
+    }
+
+    try:
+        mlflow.set_tracking_uri(f"sqlite:///{(ROOT / 'mlflow.db').as_posix()}")
+        experiment = mlflow.get_experiment_by_name("loan-approval")
+        if experiment is None:
+            return models
+        client = mlflow.tracking.MlflowClient()
+        runs = client.search_runs(
+            [experiment.experiment_id],
+            order_by=["attributes.start_time DESC"],
+            max_results=100,
+        )
+        for run in runs:
+            run_name = run.info.run_name
+            if run_name not in models or "accuracy" in models[run_name]:
+                continue
+            models[run_name]["accuracy"] = run.data.metrics.get("accuracy")
+            models[run_name]["precision"] = run.data.metrics.get("precision")
+            models[run_name]["recall"] = run.data.metrics.get("recall")
+            models[run_name]["f1"] = run.data.metrics.get("f1")
+            models[run_name]["roc_auc"] = run.data.metrics.get("roc_auc")
+            models[run_name]["parameters"] = ", ".join(
+                f"{key}={value}"
+                for key, value in sorted(run.data.params.items())
+            )
+    except Exception:
+        pass
+    return models
+
+
 # ---------------------------------------------------------------- sidebar
 with st.sidebar:
     st.markdown("### Control room")
@@ -211,6 +257,37 @@ cols[2].markdown(kpi("Approval rate", f"{approval_rate:.1%}", "share of approved
 cols[3].markdown(kpi("Live model", model_info.get("model", "XGBoost") if model_info else "XGBoost",
                      f"version {health.get('model_version', '–')}" if health else "API offline", CORAL),
                  unsafe_allow_html=True)
+st.write("")
+
+st.markdown("#### Three trained models")
+model_comparison = get_model_comparison()
+comparison_rows = []
+for key, details in model_comparison.items():
+    comparison_rows.append({
+        "Model": details["name"],
+        "Use": details["role"],
+        "Status": "ACTIVE CHAMPION" if str(details["name"]).lower().replace(" ", "_") == str(model_info.get("model", "")).lower().replace(" ", "_") else "Candidate",
+        "Accuracy": details.get("accuracy"),
+        "Precision": details.get("precision"),
+        "Recall": details.get("recall"),
+        "F1": details.get("f1"),
+        "ROC-AUC": details.get("roc_auc"),
+        "Key parameters": details.get("parameters", "View MLflow for parameters"),
+    })
+
+active_model = model_info.get("model", "xgboost")
+comparison = pd.DataFrame(comparison_rows)
+if "accuracy" in comparison:
+    metric_columns = ["Accuracy", "Precision", "Recall", "F1", "ROC-AUC"]
+    comparison[metric_columns] = comparison[metric_columns].apply(
+        lambda column: column.map(lambda value: f"{float(value):.1%}" if pd.notna(value) else "Not available")
+    )
+st.dataframe(comparison, use_container_width=True, hide_index=True, height=180)
+st.caption(
+    f"Active champion: {active_model.replace('_', ' ').title()} "
+    f"| Registry version: {model_info.get('version', 'unknown')} "
+    f"| Selection: highest ROC-AUC, with F1 as tie-breaker"
+)
 st.write("")
 
 predict_tab, history_tab, monitor_tab, about_tab = st.tabs(
