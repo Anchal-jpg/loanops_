@@ -8,8 +8,8 @@ reproducible preprocessing, multi-model training, MLflow tracking and model
 registry, FastAPI serving, Streamlit visualization, explainability, fairness
 reporting, drift monitoring, retraining and GitHub Actions CI/CD.
 
-The bundled dataset is synthetic and is used only to demonstrate the complete
-technical lifecycle.
+The bundled Kaggle dataset is used only to demonstrate the complete technical
+lifecycle: https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
 
 ## 2. Objectives
 
@@ -107,7 +107,7 @@ and pull request. CD publishes the image to GHCR.
 
 ## 9. Limitations and Future Scope
 
-The dataset is synthetic, MLflow is local, the production log is filesystem
+The dataset source is Kaggle (https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download), MLflow is local, the production log is filesystem
 based, and the API does not yet include authentication or rate limiting.
 AWS ECR/ECS deployment and cloud MLflow with S3/PostgreSQL are reserved for
 the next deployment phase.

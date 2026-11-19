@@ -3,7 +3,7 @@
 ## Verified
 
 - Modules are runnable from the project root using `python -m`.
-- Sample data has the Kaggle-compatible columns and missing values.
+- Kaggle loan data source: https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
 - Preprocessing maps `3+` to `3` and saves train/test files.
 - The model is a single sklearn pipeline used by training and API.
 - MLflow uses SQLite and the modern `champion` alias.
@@ -17,7 +17,7 @@
 2. **Port 8000 busy:** use `uvicorn app.main:app --port 8001`.
 3. **Port 8501 busy:** use `streamlit run frontend/streamlit_app.py --server.port 8502`.
 4. **MLflow database locked:** stop old MLflow processes and retry.
-5. **No model:** run `python scripts\make_sample_data.py`, `python -m src.preprocess`, then `python -m src.train`.
+5. **No model:** restore `data/loan.csv`, then run `python -m src.preprocess` and `python -m src.train`.
 6. **DVC command missing:** install `requirements.txt` again in the active venv.
 7. **Docker unavailable:** run the local Python commands instead.
 8. **Drift says too few rows:** make predictions until `min_rows` is reached or use the simulator.

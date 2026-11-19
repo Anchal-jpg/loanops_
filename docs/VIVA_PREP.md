@@ -30,7 +30,7 @@
 26. **CD?** Main branch se image build/publish/deploy.
 27. **Training-serving skew?** Train aur production preprocessing mismatch.
 28. **Random seed?** Reproducible results ke liye fixed value.
-29. **Limitations?** Synthetic data aur local filesystem production-grade nahi hain.
+29. **Limitations?** Kaggle data aur local filesystem production-grade nahi hain. Dataset: https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
 30. **Future work?** Cloud artifact store, auth, real feedback labels aur scheduled retraining.
 31. **Approval threshold kya hai?** Probability 65% ya usse zyada ho to Approved; otherwise Rejected. Threshold `params.yaml` mein configurable hai.
 32. **AWS status kya hai?** Current academic implementation local MLflow, Docker, GHCR aur GitHub Actions tak complete hai; AWS ECR/ECS aur cloud MLflow next deployment phase hain.

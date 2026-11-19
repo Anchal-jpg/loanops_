@@ -13,7 +13,6 @@ def run(label, command):
 
 def main():
     steps = [
-        ("sample data", [sys.executable, "scripts/make_sample_data.py"]),
         ("validate", [sys.executable, "-m", "src.validate_data"]),
         ("preprocess", [sys.executable, "-m", "src.preprocess"]),
         ("train", [sys.executable, "-m", "src.train"]),

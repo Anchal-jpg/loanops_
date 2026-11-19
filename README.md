@@ -41,9 +41,11 @@ flowchart LR
     K -->|drift detected| D
 ```
 
-> ⚠️ **Academic honesty:** The bundled dataset is synthetic and for
-> demonstration only. Real lending requires approved data, privacy controls,
-> authentication, durable storage and human/business review.
+> **Dataset source:** The project dataset is from Kaggle:
+> https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
+>
+> It contains 614 records and is public Kaggle-style loan data. The project
+> uses it for academic demonstration, not for real lending decisions.
 
 ## ✨ Features
 
@@ -64,8 +66,10 @@ flowchart LR
 
 ## 📊 Dataset
 
-The sample generator creates 600 realistic-looking records with missing values,
-income/credit correlations and Kaggle-compatible columns:
+The primary project dataset is the Kaggle dataset:
+https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download
+
+It contains 614 loan records with Kaggle-compatible columns:
 
 ```text
 Loan_ID, Gender, Married, Dependents, Education, Self_Employed,
@@ -92,7 +96,7 @@ loanops/
 │   ├── drift.py                   Drift tests and HTML report
 │   └── retrain.py                 Retraining after drift
 ├── scripts/
-│   ├── make_sample_data.py         Generate sample data
+│   ├── make_sample_data.py         Optional fallback dataset generator
 │   ├── setup_dvc.py                Configure local DVC remote
 │   ├── simulate_drift.py           Generate separate drift simulation data
 │   ├── promote_latest_candidate.py Promote a demo candidate in MLflow
@@ -127,7 +131,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-python scripts\make_sample_data.py
 python scripts\setup_dvc.py
 dvc repro
 python scripts\smoke_test.py
@@ -144,7 +147,6 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-python scripts/make_sample_data.py
 python scripts/setup_dvc.py
 dvc repro
 python scripts/smoke_test.py
@@ -177,7 +179,7 @@ validate → preprocess → train → evaluate → explain → fairness
 
 | # | Stage | Command | What it does |
 |---|---|---|---|
-| 1 | Data | `python scripts\make_sample_data.py` | Writes fallback `data/loan.csv` |
+| 1 | Data | Download or copy the Kaggle dataset as `data/loan.csv` | [Kaggle loan data](https://www.kaggle.com/datasets/tanishaj225/loancsv?resource=download) |
 | 2 | Validate | `python -m src.validate_data` | Checks columns, rows, ranges and target |
 | 3 | Preprocess | `python -m src.preprocess` | Converts `3+`, target and stratified split |
 | 4 | Train | `python -m src.train` | Trains three models and applies quality gate |
@@ -468,7 +470,8 @@ Full details: [SELF_AUDIT.md](docs/SELF_AUDIT.md).
 
 Current limitations:
 
-- Synthetic data is unsuitable for real lending decisions.
+- Kaggle loan data is unsuitable for real lending decisions without approval,
+  privacy controls and human/business review.
 - Local SQLite MLflow is not highly available.
 - Local filesystem logs are ephemeral on many cloud platforms.
 - The API has no authentication or rate limiting.
