@@ -94,7 +94,8 @@ loanops/
 ├── scripts/
 │   ├── make_sample_data.py         Generate sample data
 │   ├── setup_dvc.py                Configure local DVC remote
-│   ├── simulate_drift.py           Generate drifted production data
+│   ├── simulate_drift.py           Generate separate drift simulation data
+│   ├── promote_latest_candidate.py Promote a demo candidate in MLflow
 │   └── smoke_test.py               End-to-end verification
 ├── tests/                          Pytest tests
 ├── data/                            Dataset and generated CSV files
@@ -105,8 +106,12 @@ loanops/
 ├── Dockerfile, docker-compose.yml
 ├── .github/workflows/              CI, CD and scheduled drift check
 ├── requirements.txt                Exact dependency versions
-├── VIVA_PREP.md                    Viva questions and demo script
-└── SELF_AUDIT.md                   Validation and common fixes
+├── docs/
+│   ├── VIVA_PREP.md                Viva questions and demo script
+│   ├── SELF_AUDIT.md               Validation and common fixes
+│   ├── PROJECT_REPORT.md           Academic project report
+│   ├── PRESENTATION_OUTLINE.md     Presentation structure
+│   └── architecture.mmd            Architecture diagram
 ```
 
 ## 🚀 Quick Start
@@ -438,7 +443,7 @@ monitor checks numeric and categorical drift and can trigger retraining.
 SHAP explains feature influence for one prediction. Fairness compares approval
 rate and recall across groups; it is diagnostic, not legal certification.
 
-More questions and the four-person demo script: [VIVA_PREP.md](VIVA_PREP.md).
+More questions and the four-person demo script: [VIVA_PREP.md](docs/VIVA_PREP.md).
 
 ## 🛠️ Troubleshooting
 
@@ -457,7 +462,7 @@ More questions and the four-person demo script: [VIVA_PREP.md](VIVA_PREP.md).
 | Docker unavailable locally | Use GitHub Actions; Docker Desktop is optional |
 | DVC cannot initialize | Run `python scripts\setup_dvc.py` |
 
-Full details: [SELF_AUDIT.md](SELF_AUDIT.md).
+Full details: [SELF_AUDIT.md](docs/SELF_AUDIT.md).
 
 ## ⚠️ Limitations & Future Work
 
@@ -483,10 +488,10 @@ Future production work:
 ## 🔗 Links
 
 - Repository: https://github.com/KAVINGUPTA09/loanops
-- [VIVA_PREP.md](VIVA_PREP.md)
-- [SELF_AUDIT.md](SELF_AUDIT.md)
-- [PROJECT_REPORT.md](PROJECT_REPORT.md)
-- [PRESENTATION_OUTLINE.md](PRESENTATION_OUTLINE.md)
+- [VIVA_PREP.md](docs/VIVA_PREP.md)
+- [SELF_AUDIT.md](docs/SELF_AUDIT.md)
+- [PROJECT_REPORT.md](docs/PROJECT_REPORT.md)
+- [PRESENTATION_OUTLINE.md](docs/PRESENTATION_OUTLINE.md)
 - [docs/architecture.mmd](docs/architecture.mmd)
 - [params.yaml](params.yaml)
 - [dvc.yaml](dvc.yaml)

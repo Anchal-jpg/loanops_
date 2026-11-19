@@ -16,7 +16,7 @@ explainability, monitoring, retraining and CI/CD.
 
 ## Slide 4 - Architecture
 
-Show the architecture diagram from `PROJECT_REPORT.md`.
+Show the architecture diagram from `architecture.mmd`.
 
 ## Slide 5 - Dataset and Features
 
