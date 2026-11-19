@@ -1,6 +1,7 @@
 from src.validate_data import validate
 import pandas as pd
 import scripts.simulate_drift as simulator
+from src.retrain import prepare_drift_training
 
 def test_schema():
     assert len(validate()) > 0
@@ -35,4 +36,28 @@ def test_drift_simulation_preserves_production_history(tmp_path, monkeypatch):
     drift = pd.read_csv(data_dir / "drift_log.csv")
     assert "prediction" not in drift.columns
     assert "probability" not in drift.columns
+    assert "Loan_Status" in drift.columns
     assert production.read_text(encoding="utf-8").strip().endswith("Approved,0.8")
+
+
+def test_retraining_uses_verified_drift_labels():
+    base = pd.DataFrame({
+        "Gender": ["Male"],
+        "Married": ["Yes"],
+        "Dependents": ["0"],
+        "Education": ["Graduate"],
+        "Self_Employed": ["No"],
+        "ApplicantIncome": [5000],
+        "CoapplicantIncome": [1000],
+        "LoanAmount": [100],
+        "Loan_Amount_Term": [360],
+        "Credit_History": [1],
+        "Property_Area": ["Urban"],
+        "Loan_Status": [1],
+    })
+    drift = base.drop(columns=["Loan_Status"]).assign(Loan_Status="N")
+
+    combined = prepare_drift_training(base, drift, drift_weight=1.0)
+
+    assert len(combined) == 2
+    assert combined["Loan_Status"].tolist() == [1, 0]

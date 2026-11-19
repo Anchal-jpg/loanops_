@@ -11,6 +11,7 @@ mlflow.db
 data/production_log.csv
 data/drift_log.csv
 data/retrain_train.csv
+data/retrain_test.csv
 data/train.csv
 data/test.csv
 reports/*.png

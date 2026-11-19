@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     source = ROOT / "data" / "test.csv"
-    frame = pd.read_csv(source).drop(columns=["Loan_Status"])
+    frame = pd.read_csv(source)
     frame["ApplicantIncome"] *= 2.5
     frame["CoapplicantIncome"] *= 2.0
     frame["LoanAmount"] *= 1.8

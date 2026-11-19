@@ -1,4 +1,5 @@
 import json
+import os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -10,7 +11,8 @@ import joblib
 
 def main():
     p = load_params()
-    test = pd.read_csv(path(p["paths"]["test"]))
+    test_file = os.environ.get("LOANOPS_RETRAIN_TEST", p["paths"]["test"])
+    test = pd.read_csv(path(test_file))
     model = joblib.load(path(p["paths"]["model"]))
     x, y = test[CATEGORICAL + NUMERIC], test["Loan_Status"]
     report = json.loads(path(p["paths"]["info"]).read_text(encoding="utf-8"))

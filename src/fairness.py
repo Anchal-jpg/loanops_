@@ -1,11 +1,14 @@
 import json
+import os
 import pandas as pd
 import joblib
 from src.train import CATEGORICAL, NUMERIC
 from src.utils import load_params, path, json_dump
 
 def main():
-    p = load_params(); test = pd.read_csv(path(p["paths"]["test"]))
+    p = load_params()
+    test_file = os.environ.get("LOANOPS_RETRAIN_TEST", p["paths"]["test"])
+    test = pd.read_csv(path(test_file))
     model = joblib.load(path(p["paths"]["model"]))
     pred = model.predict(test[CATEGORICAL + NUMERIC])
     result = {}

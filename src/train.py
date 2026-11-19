@@ -42,9 +42,11 @@ def metrics(model, x, y):
 def main():
     p = load_params()
     retrain_path = os.environ.get("LOANOPS_RETRAIN_TRAIN")
+    retrain_test_path = os.environ.get("LOANOPS_RETRAIN_TEST")
     train_file = path(retrain_path) if retrain_path else path(p["paths"]["train"])
+    test_file = path(retrain_test_path) if retrain_test_path else path(p["paths"]["test"])
     train = pd.read_csv(train_file)
-    test = pd.read_csv(path(p["paths"]["test"]))
+    test = pd.read_csv(test_file)
     x_train, y_train = train[CATEGORICAL + NUMERIC], train[TARGET]
     x_test, y_test = test[CATEGORICAL + NUMERIC], test[TARGET]
     cfg = p["training"]["models"]
@@ -66,9 +68,13 @@ def main():
             pipe.fit(x_train, y_train)
             score = metrics(pipe, x_test, y_test)
             mlflow.set_tag("model_name", name)
+            mlflow.set_tag(
+                "training_data_source",
+                "drift_augmented" if retrain_path else "baseline",
+            )
             mlflow.log_params(cfg[name])
             mlflow.log_metrics(score)
-            mlflow.set_tag("data_hash", data_hash(path(p["paths"]["train"])))
+            mlflow.set_tag("data_hash", data_hash(train_file))
             mlflow.set_tag("git_commit", "local-working-tree")
             report_dir = path(p["paths"]["reports"])
             report_dir.mkdir(exist_ok=True)
@@ -87,6 +93,9 @@ def main():
     _, _, name, best, score, best_run_id = max(results, key=lambda row: (row[0], row[1]))
     client = mlflow.tracking.MlflowClient()
     registered_name = "loan_model"
+    selected_score = score
+    selected_name = name
+    candidate_version = "local"
     try:
         try:
             client.get_registered_model(registered_name)
@@ -96,13 +105,17 @@ def main():
         promote = True
         try:
             champion = client.get_model_version_by_alias(registered_name, "champion")
-            old_metrics = client.get_model_version(registered_name, champion.version).tags
-            old_auc = float(old_metrics.get("roc_auc", "0"))
+            champion_model = mlflow.sklearn.load_model(
+                f"models:/{registered_name}/{champion.version}"
+            )
+            old_score = metrics(champion_model, x_test, y_test)
+            old_auc = old_score["roc_auc"]
             promote = score["roc_auc"] >= old_auc + p["training"]["min_improvement"]
         except mlflow.exceptions.MlflowException:
             champion = None
         client.set_model_version_tag(version.name, version.version, "roc_auc", str(score["roc_auc"]))
         client.set_model_version_tag(version.name, version.version, "f1", str(score["f1"]))
+        candidate_version = str(version.version)
         if promote:
             client.set_registered_model_alias(registered_name, "champion", version.version)
             selected_version = str(version.version)
@@ -112,6 +125,13 @@ def main():
             selected_version = str(champion.version)
             selected_model = mlflow.sklearn.load_model(
                 f"models:/{registered_name}/{champion.version}"
+            )
+            selected_score = old_score
+            champion_run = mlflow.get_run(
+                client.get_model_version(registered_name, champion.version).run_id
+            )
+            selected_name = champion_run.data.tags.get(
+                "model_name", champion_run.info.run_name
             )
             decision = "kept_existing_champion"
         else:
@@ -125,9 +145,18 @@ def main():
     model_path = path(p["paths"]["model"])
     model_path.parent.mkdir(exist_ok=True)
     joblib.dump(selected_model, model_path)
-    info = {"model": name, "metrics": score, "version": selected_version, "alias": "champion",
-            "registry_name": registered_name, "decision": decision,
-            "training_date": datetime.now(timezone.utc).isoformat()}
+    info = {
+        "model": selected_name,
+        "metrics": selected_score,
+        "candidate_model": name,
+        "candidate_metrics": score,
+        "candidate_version": candidate_version,
+        "version": selected_version,
+        "alias": "champion",
+        "registry_name": registered_name,
+        "decision": decision,
+        "training_date": datetime.now(timezone.utc).isoformat(),
+    }
     json_dump(info, path(p["paths"]["info"]))
     print(json.dumps(info, indent=2))
 

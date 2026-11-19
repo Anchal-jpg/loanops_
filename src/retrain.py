@@ -3,25 +3,29 @@ import os
 import subprocess
 import sys
 
-import joblib
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-from src.train import CATEGORICAL, NUMERIC
+from src.train import CATEGORICAL, NUMERIC, TARGET
 from src.utils import load_params, path
 
 
-def prepare_drift_training(base_train, drift, model, threshold, drift_weight):
+def prepare_drift_training(base_train, drift, drift_weight):
     required = CATEGORICAL + NUMERIC
     missing = [column for column in required if column not in drift.columns]
     if missing:
         raise ValueError(f"Drift data missing columns: {missing}")
+    if TARGET not in drift.columns:
+        raise ValueError(
+            "Drift data has no Loan_Status labels. Retraining requires "
+            "verified outcomes; regenerate the labeled drift simulation."
+        )
 
-    drift_features = drift[required].copy()
+    drift_features = drift[required + [TARGET]].copy()
     drift_features["Dependents"] = drift_features["Dependents"].replace("3+", "3")
-    probabilities = model.predict_proba(drift_features)[:, 1]
-    pseudo_labels = (probabilities >= threshold).astype(int)
-
-    drift_features["Loan_Status"] = pseudo_labels
+    if drift_features[TARGET].dtype == object:
+        drift_features[TARGET] = drift_features[TARGET].map({"Y": 1, "N": 0})
+    drift_features[TARGET] = drift_features[TARGET].astype(int)
     weighted_count = max(1, int(len(drift_features) * drift_weight))
     drift_features = drift_features.sample(
         n=min(weighted_count, len(drift_features)),
@@ -42,34 +46,35 @@ def main():
     if not drift_log.exists():
         raise FileNotFoundError("No data/drift_log.csv; simulate drift before retraining")
 
-    model_path = path(params["paths"]["model"])
-    if not model_path.exists():
-        raise FileNotFoundError("No champion model found")
-
     base_train = pd.read_csv(path(params["paths"]["train"]))
     drift = pd.read_csv(drift_log)
-    model = joblib.load(model_path)
-    threshold = float(params["training"].get("approval_threshold", 0.5))
     drift_weight = float(params["training"].get("drift_weight", 0.5))
-
-    combined = prepare_drift_training(
-        base_train, drift, model, threshold, drift_weight
+    combined = prepare_drift_training(base_train, drift, drift_weight)
+    retrain_train, retrain_test = train_test_split(
+        combined,
+        test_size=params["training"]["test_size"],
+        random_state=params["random_state"],
+        stratify=combined[TARGET],
     )
-    retrain_train = path("data/retrain_train.csv")
-    retrain_train.parent.mkdir(exist_ok=True)
-    combined.to_csv(retrain_train, index=False)
+    train_path = path("data/retrain_train.csv")
+    test_path = path("data/retrain_test.csv")
+    train_path.parent.mkdir(exist_ok=True)
+    retrain_train.to_csv(train_path, index=False)
+    retrain_test.to_csv(test_path, index=False)
 
     print(json.dumps({
         "retraining_source": "data/drift_log.csv",
-        "pseudo_label_method": "current champion probability >= approval threshold",
-        "approval_threshold": threshold,
+        "label_source": "known Loan_Status from held-out Kaggle rows",
         "original_training_rows": len(base_train),
         "drift_rows_added": len(combined) - len(base_train),
         "combined_training_rows": len(combined),
+        "retrain_training_rows": len(retrain_train),
+        "retrain_evaluation_rows": len(retrain_test),
     }, indent=2))
 
     environment = os.environ.copy()
-    environment["LOANOPS_RETRAIN_TRAIN"] = str(retrain_train)
+    environment["LOANOPS_RETRAIN_TRAIN"] = str(train_path)
+    environment["LOANOPS_RETRAIN_TEST"] = str(test_path)
     for module in ["src.train", "src.evaluate", "src.explain", "src.fairness"]:
         subprocess.run(
             [sys.executable, "-m", module],
