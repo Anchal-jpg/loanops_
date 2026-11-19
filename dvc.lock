@@ -20,8 +20,8 @@ stages:
       size: 38011
     - path: params.yaml
       hash: md5
-      md5: 752443e0fdf96daeed0b95923105aa92
-      size: 548
+      md5: d540e9bfe383248cd628732059e8745b
+      size: 569
     - path: src/preprocess.py
       hash: md5
       md5: 65bbac58a0a2a66e570ef9caa92951c8
@@ -48,12 +48,12 @@ stages:
       size: 34132
     - path: params.yaml
       hash: md5
-      md5: 752443e0fdf96daeed0b95923105aa92
-      size: 548
+      md5: d540e9bfe383248cd628732059e8745b
+      size: 569
     - path: src/train.py
       hash: md5
-      md5: 06e34de225545b6463fda866a3953548
-      size: 6665
+      md5: 07d1788c17d47ef55384a42f88b177dc
+      size: 6805
     outs:
     - path: models/best_model.joblib
       hash: md5
@@ -61,7 +61,7 @@ stages:
       size: 6519
     - path: models/model_info.json
       hash: md5
-      md5: 56047791089ba7e8567438e5839c285e
+      md5: 546fa10e6c361afdfd231d4e24c930c7
       size: 409
   evaluate:
     cmd: python -m src.evaluate
